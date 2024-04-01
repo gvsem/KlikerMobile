@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#060607</color>
+    <color name="white">#FAFAFA</color>
+    <color name="brand">#364968</color>
+    <color name="yellow">#FDDF97</color>
+    <color name="brand_shadow">#394A67</color>
+    <color name="yellow_shadow">#ECCE87</color>
 </resources>
