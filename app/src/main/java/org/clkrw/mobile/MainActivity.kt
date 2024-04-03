@@ -41,6 +41,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     KlikerMobileTheme {
-        Greeting("Android")
+        ItemPresentation(previewId = 0, title = "Some Presentation", author = "Author", date = "01.02.2022", link = "localhost:3000/clicker/12345")
     }
 }
