@@ -87,7 +87,7 @@ fun ClickerView(state: ClickerUiState.Loaded, modifier: Modifier = Modifier) {
             .padding(8.dp)
     ) {
         Text(
-            state.presentation.name,
+            state.presentation.title,
             style = Typography.displayLarge
         )
         Row(horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()) {
@@ -117,7 +117,7 @@ fun ClickerView(state: ClickerUiState.Loaded, modifier: Modifier = Modifier) {
 fun ClickerViewPreview() {
     ClickerView(
         ClickerUiState.Loaded(
-            Presentation(0, "Hello", 10),
+            Presentation(0, 0, "Hello", "Someone", "10.10.2020", "https://clkr.me/111", 10),
             1,
             2,
         )

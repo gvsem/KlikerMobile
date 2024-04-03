@@ -4,12 +4,12 @@ import org.clkrw.mobile.domain.model.Presentation
 import org.clkrw.mobile.domain.model.Showing
 
 val presentations = listOf(
-    Presentation(0, "Kek", 13),
-    Presentation(1, "Lol", 228),
-    Presentation(2, "I want to sleep", 420),
-    Presentation(3, "Help me", 420),
-    Presentation(4, "Please", 420),
-    Presentation(5, "No", 420),
+    Presentation(0, 0, "Kek", "Author 1", "10.10.2020", "https://clkr.me/111", 13),
+    Presentation(1, 0, "Lol", "Author 2", "10.10.2020", "https://clkr.me/111", 228),
+    Presentation(2, 0, "I want to sleep", "Author 1", "10.10.2020", "https://clkr.me/111", 420),
+    Presentation(3, 0, "Help me", "Author 1", "10.10.2020", "https://clkr.me/111", 420),
+    Presentation(4, 0, "Please", "Author 4", "10.10.2020", "https://clkr.me/111", 420),
+    Presentation(5, 0, "No", "One more author", "10.10.2020", "https://clkr.me/111", 420),
 )
 
 val showings = mapOf(
