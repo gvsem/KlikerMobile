@@ -5,7 +5,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Show(
     val id: String,
+    val presentation: Presentation,
     val currentSlideNo: Int,
     val maxSlidesCount: Int,
-    val presentation: Presentation,
+    val updatedAt: String,
+    val shorts: List<ShortUrl>,
 )
