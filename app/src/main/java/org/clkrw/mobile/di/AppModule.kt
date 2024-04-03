@@ -1,14 +1,18 @@
 package org.clkrw.mobile.di
 
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import org.clkrw.mobile.data.api.ClickerApi
+import org.clkrw.mobile.data.auth.AuthServiceImpl
 import org.clkrw.mobile.data.repository.ShowRepositoryImpl
+import org.clkrw.mobile.domain.auth.AuthService
 import org.clkrw.mobile.domain.repository.ShowRepository
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -21,7 +25,7 @@ private val json = Json {
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun providesBaseUrl(): String = "http://10.0.2.2:3000/"
+    fun providesBaseUrl(): String = "https://clkr.me"
 
     @Provides
     @Singleton
@@ -35,7 +39,10 @@ object AppModule {
     fun provideClickerApi(retrofit: Retrofit): ClickerApi = retrofit.create(ClickerApi::class.java)
 
     @Provides
+    fun provideAuthService(@ApplicationContext appContext: Context): AuthService = AuthServiceImpl(appContext)
+
+    @Provides
     @Singleton
-    fun provideNoteDatabase(clickerApi: ClickerApi): ShowRepository =
-        ShowRepositoryImpl(clickerApi)
+    fun provideNoteDatabase(clickerApi: ClickerApi, authService: AuthService): ShowRepository =
+        ShowRepositoryImpl(clickerApi, authService)
 }

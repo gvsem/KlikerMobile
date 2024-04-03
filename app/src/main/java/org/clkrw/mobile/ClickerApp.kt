@@ -30,7 +30,7 @@ fun ClickerApp() {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = Screen.valueOf(
-        backStackEntry?.destination?.route?.substringBefore('/') ?: Screen.Gallery.name
+        backStackEntry?.destination?.route?.substringBefore('/') ?: Screen.Login.name
     )
 
     Scaffold(
@@ -46,13 +46,14 @@ fun ClickerApp() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Gallery.name
+            startDestination = Screen.Login.name
         ) {
             composable(route = Screen.Login.name) {
                 LoginScreen(
-                    modifier = Modifier.padding(paddingValues)
+                    viewModel = hiltViewModel(),
+                    navigateCallback = { navController.navigate(Screen.Gallery.name) },
+                    modifier = Modifier.padding(paddingValues),
                 )
-
             }
             composable(route = Screen.Gallery.name) {
                 GalleryScreen(
@@ -63,7 +64,6 @@ fun ClickerApp() {
                     },
                     onClickStartPresentation = { show -> navController.navigate("${Screen.Clicker.name}/${show.id}") }
                 )
-
             }
             composable(route = "${Screen.Presentation.name}/{presentationId}") {
                 PresentationScreen(
