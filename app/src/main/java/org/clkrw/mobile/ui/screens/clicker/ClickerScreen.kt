@@ -48,7 +48,7 @@ fun ClickerScreen(
         var hasFocus by remember { mutableStateOf(false) }
 
         ClickerView(
-            state as ClickerUiState.Loaded,
+            state,
             modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged {

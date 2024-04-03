@@ -8,5 +8,5 @@ import androidx.compose.ui.Modifier
 fun PresentationScreen(
     modifier: Modifier = Modifier,
 ) {
-    Text(text = "PresentationScreen")
+    Text(text = "PresentationScreen", modifier = modifier)
 }

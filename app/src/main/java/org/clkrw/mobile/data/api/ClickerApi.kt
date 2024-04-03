@@ -14,34 +14,32 @@ import retrofit2.http.Path
  */
 interface ClickerApi {
     @GET("/api/user/info")
-    suspend fun getUserInfo(@Header("X-Auth") authToken: String): User
+    suspend fun getUserInfo(): User
 
     @GET("/api/user/grant/{showId}/to/{userEmail}/with/open")
     suspend fun openAccessToShow(
-        @Header("X-Auth") authToken: String,
         @Path("showId") showId: String,
         @Path("userEmail") userEmail: String,
     )
 
     @GET("/api/user/grant/{showId}/to/{userEmail}/with/close")
     suspend fun closeAccessToShow(
-        @Header("X-Auth") authToken: String,
         @Path("showId") showId: String,
         @Path("userEmail") userEmail: String,
     )
 
     @GET("/api/show/get")
-    suspend fun getShows(@Header("X-Auth") authToken: String): List<Show>
+    suspend fun getShows(): List<Show>
 
     @GET("/api/show/get/{showId}")
-    suspend fun getShow(@Header("X-Auth") authToken: String, @Path("showId") showId: String): Show
+    suspend fun getShow(@Path("showId") showId: String): Show
 
     @GET("/clicker/{showId}/next")
-    suspend fun nextSlide(@Header("X-Auth") authToken: String, @Path("showId") showId: String)
+    suspend fun nextSlide(@Path("showId") showId: String)
 
     @GET("/clicker/{showId}/prev")
-    suspend fun prevSlide(@Header("X-Auth") authToken: String, @Path("showId") showId: String)
+    suspend fun prevSlide(@Path("showId") showId: String)
 
     @POST("/clicker/{showId}/laser")
-    suspend fun laserEvent(@Header("X-Auth") authToken: String, @Path("showId") showId: String)
+    suspend fun laserEvent(@Path("showId") showId: String)
 }

@@ -18,7 +18,7 @@ class ClickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val showingRepository: ShowRepository,
 ) : ViewModel() {
-    private val showId: String = checkNotNull(savedStateHandle["presentationId"])
+    private val showId: String = checkNotNull(savedStateHandle["showId"])
 
     // Fetch the relevant user information from the data layer,
     // ie. userInfoRepository, based on the passed userId argument

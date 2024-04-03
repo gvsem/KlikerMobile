@@ -1,5 +1,6 @@
 package org.clkrw.mobile.domain.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
