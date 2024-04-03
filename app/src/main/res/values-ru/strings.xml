@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preview">Превью</string>
+    <string name="author">Автор</string>
+    <string name="date">Дата</string>
+    <string name="share">Поделиться</string>
+    <string name="share_link_via">Поделиться ссылкой через...</string>
+
+    <string name="item_presentation_open_clicker">Открыть кликер</string>
+</resources>
