@@ -58,10 +58,10 @@ fun ClickerApp() {
                 GalleryScreen(
                     viewModel = hiltViewModel(),
                     modifier = Modifier.padding(paddingValues),
-                    onClickEditPresentation = {
-                        navController.navigate("${Screen.Presentation.name}/${it.id}")
+                    onClickEditPresentation = { show ->
+                        navController.navigate("${Screen.Presentation.name}/${show.id}")
                     },
-                    onClickStartPresentation = { navController.navigate("${Screen.Clicker.name}/${it.id}") }
+                    onClickStartPresentation = { show -> navController.navigate("${Screen.Clicker.name}/${show.id}") }
                 )
 
             }

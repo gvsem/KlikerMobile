@@ -1,29 +1,25 @@
 package org.clkrw.mobile.ui.screens.gallery
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import org.clkrw.mobile.domain.model.Presentation
-import org.clkrw.mobile.domain.repository.PresentationRepository
+import kotlinx.coroutines.launch
+import org.clkrw.mobile.domain.repository.ShowRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
-    private val presentationRepository: PresentationRepository,
+    private val presentationRepository: ShowRepository,
 ) : ViewModel() {
-    val state: StateFlow<List<Presentation>> = presentationRepository
-        .getPresentations()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = emptyList()
-        )
+    var state by mutableStateOf<GalleryUiState>(GalleryUiState.Loading)
 
-    companion object {
-        private const val TIMEOUT_MILLIS = 5_000L
+    init {
+        viewModelScope.launch {
+            val shows = presentationRepository.getShows()
+            state = GalleryUiState.Loaded(shows)
+        }
     }
-
 }

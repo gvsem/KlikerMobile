@@ -1,64 +1,57 @@
 package org.clkrw.mobile.ui.screens.clicker
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.clkrw.mobile.domain.repository.PresentationRepository
-import org.clkrw.mobile.domain.repository.ShowingRepository
+import org.clkrw.mobile.domain.repository.ShowRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class ClickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val presentationRepository: PresentationRepository,
-    private val showingRepository: ShowingRepository,
+    private val showingRepository: ShowRepository,
 ) : ViewModel() {
-    private val presentationId: Int = checkNotNull(savedStateHandle.get<String>("presentationId")).toInt()
+    private val showId: String = checkNotNull(savedStateHandle["presentationId"])
 
     // Fetch the relevant user information from the data layer,
     // ie. userInfoRepository, based on the passed userId argument
-    val state: StateFlow<ClickerUiState> = showingRepository
-        .getShowing(presentationId)
-        .map {
-            val presentation = presentationRepository.getPresentationById(it.presentationId)
-            ClickerUiState.Loaded(presentation, it.slideNumber, it.displaysCount)
+    var state: ClickerUiState by mutableStateOf(ClickerUiState.Loading)
+        private set
+
+    init {
+        viewModelScope.launch {
+            val show = showingRepository.getShow(showId)
+            state = ClickerUiState.Loaded(show)
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = ClickerUiState.Loading
-        )
+    }
 
 
     fun onEvent(event: ClickerUiEvent) {
         when (event) {
             ClickerUiEvent.NextSlide -> {
                 viewModelScope.launch {
-                    val currentState = state.value
+                    val currentState = state
                     if (currentState is ClickerUiState.Loaded) {
-                        showingRepository.nextSlide(presentationId)
+                        showingRepository.nextSlide(showId)
                     }
                 }
             }
 
             ClickerUiEvent.PrevSlide -> {
                 viewModelScope.launch {
-                    val currentState = state.value
+                    val currentState = state
                     if (currentState is ClickerUiState.Loaded) {
-                        showingRepository.prevSlide(presentationId)
+                        showingRepository.prevSlide(showId)
                     }
                 }
             }
         }
-    }
-
-    companion object {
-        private const val TIMEOUT_MILLIS = 5_000L
     }
 }

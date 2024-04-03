@@ -1,70 +1,41 @@
 package org.clkrw.mobile.di
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
-import org.clkrw.mobile.data.presentations
-import org.clkrw.mobile.data.showings
-import org.clkrw.mobile.domain.model.Presentation
-import org.clkrw.mobile.domain.model.Showing
-import org.clkrw.mobile.domain.repository.PresentationRepository
-import org.clkrw.mobile.domain.repository.ShowingRepository
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import org.clkrw.mobile.data.api.ClickerApi
+import org.clkrw.mobile.data.repository.ShowRepositoryImpl
+import org.clkrw.mobile.domain.repository.ShowRepository
+import retrofit2.Retrofit
 import javax.inject.Singleton
+
+private val json = Json {
+    ignoreUnknownKeys = true
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    @Provides
+    fun providesBaseUrl(): String = "http://10.0.2.2:3000/"
 
     @Provides
     @Singleton
-    fun provideNoteDatabase(): ShowingRepository {
-        val repo = object : ShowingRepository {
-            private val data = MutableStateFlow(showings)
-
-            override fun getShowing(presentationId: Int): Flow<Showing> =
-                data.map { it.getValue(presentationId) }
-
-            override suspend fun nextSlide(presentationId: Int) {
-                data.update {
-                    it.toMutableMap().apply {
-                        val old = it.getValue(presentationId)
-                        put(presentationId, old.copy(slideNumber = old.slideNumber + 1))
-                    }
-                }
-            }
-
-            override suspend fun prevSlide(presentationId: Int) {
-                data.update {
-                    it.toMutableMap().apply {
-                        val old = it.getValue(presentationId)
-                        put(presentationId, old.copy(slideNumber = old.slideNumber - 1))
-                    }
-                }
-            }
-
-        }
-
-        return repo
-    }
+    fun provideRetrofit(baseUrl: String): Retrofit = Retrofit.Builder()
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .baseUrl(baseUrl)
+        .build()
 
     @Provides
     @Singleton
-    fun provideNoteRepository(): PresentationRepository {
-        val repo = object : PresentationRepository {
-            private val data = MutableStateFlow(presentations)
+    fun provideClickerApi(retrofit: Retrofit): ClickerApi = retrofit.create(ClickerApi::class.java)
 
-            override fun getPresentations(): Flow<List<Presentation>> =
-                data
-
-            override suspend fun getPresentationById(id: Int): Presentation =
-                presentations.first { it.id == id }
-        }
-
-        return repo
-    }
+    @Provides
+    @Singleton
+    fun provideNoteDatabase(clickerApi: ClickerApi): ShowRepository =
+        ShowRepositoryImpl(clickerApi)
 }
