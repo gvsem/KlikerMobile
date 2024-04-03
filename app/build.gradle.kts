@@ -82,6 +82,18 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    implementation("androidx.credentials:credentials:1.2.1")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+
+    implementation("androidx.credentials:credentials:1.3.0-alpha01")
+
+    // optional - needed for credentials support from play services, for devices running
+    // Android 13 and below.
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-alpha01")
 }
 
 kapt {

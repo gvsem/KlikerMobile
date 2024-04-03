@@ -9,6 +9,9 @@
 
     <string name="item_presentation_open_clicker">Open Clicker</string>
 
+    <string name="sp_access_token">auth</string>
+    <string name="gcp_id">675800494347-sc31m2r71tp4j9t9qfa2mk6kd75ir794.apps.googleusercontent.com</string>
+    <string name="app_name">KlikerMobile</string>
     <string name="gallery">Presentations Gallery</string>
     <string name="presentation">Presentation</string>
     <string name="clicker">Clicker</string>

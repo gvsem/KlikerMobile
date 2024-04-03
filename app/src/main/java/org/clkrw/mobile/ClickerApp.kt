@@ -1,9 +1,15 @@
 package org.clkrw.mobile
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,12 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.lifecycle.HiltViewModel
+import org.clkrw.mobile.domain.auth.AuthService
 import org.clkrw.mobile.ui.screens.clicker.ClickerScreen
 import org.clkrw.mobile.ui.screens.gallery.GalleryScreen
 import org.clkrw.mobile.ui.screens.login.LoginScreen
@@ -30,7 +41,7 @@ fun ClickerApp() {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = Screen.valueOf(
-        backStackEntry?.destination?.route?.substringBefore('/') ?: Screen.Gallery.name
+        backStackEntry?.destination?.route?.substringBefore('/') ?: Screen.Login.name
     )
 
     Scaffold(
@@ -46,13 +57,14 @@ fun ClickerApp() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Gallery.name
+            startDestination = Screen.Login.name
         ) {
             composable(route = Screen.Login.name) {
                 LoginScreen(
-                    modifier = Modifier.padding(paddingValues)
+                    navigateCallback = { navController.navigate(Screen.Gallery.name) },
+                    modifier = Modifier.padding(paddingValues),
+                    viewModel = hiltViewModel()
                 )
-
             }
             composable(route = Screen.Gallery.name) {
                 GalleryScreen(
@@ -63,7 +75,6 @@ fun ClickerApp() {
                     },
                     onClickStartPresentation = { show -> navController.navigate("${Screen.Clicker.name}/${show.id}") }
                 )
-
             }
             composable(route = "${Screen.Presentation.name}/{presentationId}") {
                 PresentationScreen(
