@@ -1,23 +1,25 @@
 package org.clkrw.mobile.data.repository
 
 import org.clkrw.mobile.data.api.ClickerApi
+import org.clkrw.mobile.domain.auth.AuthService
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.repository.ShowRepository
 
 class ShowRepositoryImpl(
-    val clickerApi: ClickerApi,
+    private val clickerApi: ClickerApi,
+    private val authService: AuthService,
 ) : ShowRepository {
     override suspend fun getShows(): List<Show> =
-        clickerApi.getShows()
+        clickerApi.getShows(authService.getAuthToken() ?: error("No auth token!"))
 
     override suspend fun getShow(showId: String): Show =
-        clickerApi.getShow(showId)
+        clickerApi.getShow(authService.getAuthToken() ?: error("No auth token!"), showId)
 
     override suspend fun nextSlide(showId: String) {
-        clickerApi.nextSlide(showId)
+        clickerApi.nextSlide(authService.getAuthToken() ?: error("No auth token!"), showId)
     }
 
     override suspend fun prevSlide(showId: String) {
-        clickerApi.prevSlide(showId)
+        clickerApi.prevSlide(authService.getAuthToken() ?: error("No auth token!"), showId)
     }
 }
