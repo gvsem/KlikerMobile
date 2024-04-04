@@ -10,4 +10,13 @@
     <string name="email_input_hint">Введите Email</string>
     <string name="grant_access">Предоставить доступ</string>
     <string name="revoke_access">Аннулировать доступ</string>
+    <string name="gallery">Презентации</string>
+    <string name="presentation">Презентация</string>
+    <string name="clicker">Кликер</string>
+    <string name="back_button">Назад</string>
+    <string name="cancel">Отмена</string>
+    <string name="next">Вперёд</string>
+    <string name="displays_count">Количество дисплеев</string>
+    <string name="edit_presentation">Редактировать презентацию</string>
+    <string name="start_presentation">Запустить презентацию</string>
 </resources>

@@ -9,17 +9,16 @@
 
     <string name="item_presentation_open_clicker">Open Clicker</string>
 
-    <string name="sp_access_token">auth</string>
-    <string name="gcp_id">675800494347-sc31m2r71tp4j9t9qfa2mk6kd75ir794.apps.googleusercontent.com</string>
+    <string name="sp_access_token" translatable="false">auth</string>
+    <string name="gcp_id" translatable="false">675800494347-sc31m2r71tp4j9t9qfa2mk6kd75ir794.apps.googleusercontent.com</string>
     <string name="gallery">Presentations Gallery</string>
     <string name="presentation">Presentation</string>
     <string name="clicker">Clicker</string>
     <string name="back_button">Back</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
-    <string name="submit">Submit</string>
     <string name="displays_count">Displays Count</string>
-    <string name="edit_presentation">Edit Presentaion</string>
+    <string name="edit_presentation">Edit Presentation</string>
     <string name="start_presentation">Start presentation</string>
     <string name="email_input_hint">Enter Email</string>
     <string name="grant_access">Grant Access</string>
