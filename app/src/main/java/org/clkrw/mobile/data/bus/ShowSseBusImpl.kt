@@ -8,8 +8,9 @@ import org.clkrw.mobile.util.SseClient
 class ShowSseBusImpl(
     private val sseClient: SseClient,
 ) : ShowSseBus {
-    override fun getClickerEvents(showId: String): Flow<ClickerSseEvent> =
-        sseClient.getEventsFlow<ClickerSseEvent>("/show/${showId}/bus?silent=True", EVENT_TYPE)
+    override fun getClickerEvents(showId: String): Flow<ClickerSseEvent>  {
+        return sseClient.getEventsFlow<ClickerSseEvent>("/show/${showId}/bus?silent=True", EVENT_TYPE)
+    }
 
     companion object {
         const val EVENT_TYPE = "clickerState"
