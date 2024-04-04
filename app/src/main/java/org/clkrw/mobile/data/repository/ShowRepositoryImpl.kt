@@ -1,11 +1,9 @@
 package org.clkrw.mobile.data.repository
 
 import org.clkrw.mobile.data.api.ClickerApi
-import org.clkrw.mobile.domain.auth.AuthService
 import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.repository.ShowRepository
-import org.json.JSONObject
 
 class ShowRepositoryImpl(
     private val clickerApi: ClickerApi,

@@ -5,7 +5,6 @@ import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.model.User
 import retrofit2.Response
-import org.json.JSONObject
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
