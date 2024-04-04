@@ -51,7 +51,11 @@ fun ClickerApp() {
             composable(route = Screen.Login.name) {
                 LoginScreen(
                     viewModel = hiltViewModel(),
-                    navigateCallback = { navController.navigate(Screen.Gallery.name) },
+                    navigateCallback = {
+                        navController.navigate(Screen.Gallery.name) {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    },
                     modifier = Modifier.padding(paddingValues),
                 )
             }
