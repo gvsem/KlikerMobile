@@ -2,8 +2,10 @@ package org.clkrw.mobile.data.repository
 
 import org.clkrw.mobile.data.api.ClickerApi
 import org.clkrw.mobile.domain.auth.AuthService
+import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.repository.ShowRepository
+import org.json.JSONObject
 
 class ShowRepositoryImpl(
     private val clickerApi: ClickerApi,
@@ -20,5 +22,12 @@ class ShowRepositoryImpl(
 
     override suspend fun prevSlide(showId: String) {
         clickerApi.prevSlide(showId)
+    }
+
+    override suspend fun laser(showId: String, type: Boolean, x: Float, y: Float) {
+        clickerApi.laserEvent(showId, LaserEvent(
+            if (type) "on" else "off",
+            x, y
+        ))
     }
 }
