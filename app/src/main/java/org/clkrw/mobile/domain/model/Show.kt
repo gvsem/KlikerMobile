@@ -11,4 +11,5 @@ data class Show(
     val updatedAt: String,
     val shorts: List<ShortUrl>,
     val grants: List<Grant>,
+    val owner: User,
 )

@@ -4,10 +4,8 @@ package org.clkrw.mobile.data.api
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.model.User
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
-
 
 /**
  * Use the Retrofit builder to build a retrofit object using a kotlinx.serialization converter
