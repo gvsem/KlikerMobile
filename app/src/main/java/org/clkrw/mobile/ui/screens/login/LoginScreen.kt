@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import org.clkrw.mobile.R
@@ -23,7 +21,7 @@ import org.clkrw.mobile.R
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navigateCallback: () -> Unit,
+    navigateCallback: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -51,10 +49,6 @@ fun LoginScreen(
             },
             modifier = modifier,
             shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.brand),
-                contentColor = colorResource(R.color.yellow)
-            )
         ) {
             Text(text = "Sign in with Google", modifier = Modifier.padding(6.dp))
         }

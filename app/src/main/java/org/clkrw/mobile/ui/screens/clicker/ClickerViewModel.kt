@@ -1,6 +1,5 @@
 package org.clkrw.mobile.ui.screens.clicker
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.clkrw.mobile.domain.bus.ShowSseBus
+import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.repository.ShowRepository
 import javax.inject.Inject
 
@@ -37,8 +37,8 @@ class ClickerViewModel @Inject constructor(
         viewModelScope.launch {
             val show = showingRepository.getShow(showId)
             countsState = countsState.copy(
-                slideNo = show.currentSlideNo,
-                totalSlides = show.maxSlidesCount
+                slideNo = 1,
+                totalSlides = null,
             )
             state = ClickerUiState.Loaded(show)
         }
@@ -50,7 +50,7 @@ class ClickerViewModel @Inject constructor(
             .getClickerEvents(showId)
             .onEach {
                 countsState =
-                    ClickerCountsUiState(it.slideNo, it.totalSlides, it.displaysOnline)
+                    ClickerCountsUiState(it.url, it.slideNo, it.totalSlides, it.displaysOnline)
             }
             .launchIn(
                 viewModelScope,
@@ -82,10 +82,9 @@ class ClickerViewModel @Inject constructor(
         }
     }
 
-    fun onLaserEvent(type: Boolean, x : Float, y : Float) {
+    fun onLaserEvent(laserEvent: LaserEvent) {
         viewModelScope.launch {
-            Log.d("INFO", "$type $x $y")
-            showingRepository.laser(showId, type, x, y)
+            showingRepository.laser(showId, laserEvent)
         }
     }
 }

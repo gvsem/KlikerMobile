@@ -3,14 +3,11 @@ package org.clkrw.mobile.ui.screens.gallery
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.text.format.DateUtils.getRelativeDateTimeString
 import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -37,9 +35,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,8 +59,6 @@ fun GalleryScreen(
     modifier: Modifier = Modifier,
 ) {
     val state = viewModel.state
-
-    val context = LocalContext.current
 
     if (state is GalleryUiState.Loaded) {
         ShowsList(
@@ -101,13 +97,23 @@ fun ShowCard(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val shortIdentifier = show.shorts.first().shortIdentifier
+    val link = "clkr.me/$shortIdentifier"
+    val shareLinkViaStr = stringResource(id = R.string.share_link_via)
+    val onClickSharePresentation = {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, link)
+        context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
+    }
 
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(all = 16.dp)
-            .height(170.dp)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
+            .height(170.dp),
+        shape = RectangleShape
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -115,7 +121,7 @@ fun ShowCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxWidth(0.8f)) {
+            Column {
                 Text(
                     text = show.presentation.title,
                     style = Typography.titleLarge,
@@ -125,7 +131,9 @@ fun ShowCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(.5f)
@@ -154,7 +162,6 @@ fun ShowCard(
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = stringResource(id = R.string.author),
-                                tint = colorResource(id = R.color.black)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -170,55 +177,41 @@ fun ShowCard(
                             Icon(
                                 imageVector = Icons.Default.DateRange,
                                 contentDescription = stringResource(id = R.string.date),
-                                tint = colorResource(id = R.color.black)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
+                            val (date, time) = DateUtils.toString(show.updatedAt, context)
+                                .toString().split(",").map { it.trim() }
                             Text(
-                                text = DateUtils.toString(show.updatedAt, context).toString(),
+                                text = "$date\n$time",
                                 style = Typography.bodyMedium,
+                                overflow = TextOverflow.Ellipsis,
+                                minLines = 2
                             )
                         }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val shortIdentifier = show.shorts.first().shortIdentifier
-                    val link = "clkr.me/$shortIdentifier"
-                    Text(
-                        text = link,
-                        style = Typography.bodyMedium,
-                    )
-
-                    val shareLinkViaStr = stringResource(id = R.string.share_link_via)
-                    IconButton(onClick = {
-                        val intent = Intent(Intent.ACTION_SEND)
-                        intent.type = "text/plain"
-                        intent.data = Uri.parse("https://clkr.me/$shortIdentifier")
-                        context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = stringResource(id = R.string.share),
-                            modifier = Modifier.size(20.dp)
-                        )
                     }
                 }
             }
 
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxHeight().width(40.dp),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .wrapContentWidth(),
             ) {
                 IconButton(onClick = onClickEditPresentation) {
                     Icon(
-                        imageVector = Icons.Filled.Edit,
+                        imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.edit_presentation),
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                IconButton(onClick = onClickSharePresentation) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = stringResource(R.string.share_link_via),
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
                 IconButton(onClick = onClickStartPresentation) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
@@ -261,9 +254,8 @@ fun ShowCardPreview() {
         grants = emptyList(),
     )
 
-    ShowCard(
-        show,
-        {},
-        {},
-    )
+    ShowsList(
+        shows = listOf(show, show),
+        onClickEditPresentation = {},
+        onClickStartPresentation = {})
 }

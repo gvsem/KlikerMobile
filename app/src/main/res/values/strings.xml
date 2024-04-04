@@ -11,8 +11,8 @@
 
     <string name="sp_access_token">auth</string>
     <string name="gcp_id">675800494347-sc31m2r71tp4j9t9qfa2mk6kd75ir794.apps.googleusercontent.com</string>
-    <string name="gallery">Presentations Gallery</string>
-    <string name="presentation">Presentation</string>
+    <string name="gallery">My Presentations</string>
+    <string name="presentation">Edit Access Rights</string>
     <string name="clicker">Clicker</string>
     <string name="back_button">Back</string>
     <string name="cancel">Cancel</string>

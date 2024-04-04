@@ -1,5 +1,6 @@
 package org.clkrw.mobile.domain.repository
 
+import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Show
 
 interface ShowRepository {
@@ -7,5 +8,5 @@ interface ShowRepository {
     suspend fun getShow(showId: String): Show
     suspend fun nextSlide(showId: String)
     suspend fun prevSlide(showId: String)
-    suspend fun laser(showId: String, type: Boolean, x: Float, y : Float)
+    suspend fun laser(showId: String, laserEvent: LaserEvent)
 }

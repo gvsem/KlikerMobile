@@ -1,15 +1,10 @@
 package org.clkrw.mobile.ui.screens.presentation
 
-import android.graphics.BitmapFactory
-import android.util.Base64
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -40,15 +34,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,8 +49,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Grant
-import org.clkrw.mobile.ui.screens.clicker.ClickerUiEvent
-import org.clkrw.mobile.ui.theme.Typography
 
 @Composable
 fun PresentationScreen(
@@ -89,11 +76,6 @@ fun PresentationView(
             .fillMaxHeight()
             .padding(8.dp)
     ) {
-        Text(
-            text = state.show.presentation.title,
-            style = Typography.headlineLarge,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Box(modifier = Modifier.fillMaxHeight()) {
             GrantsView(state, viewModel = viewModel)
             EmailInputView(modifier = Modifier.align(Alignment.BottomStart), viewModel = viewModel)
@@ -137,6 +119,7 @@ fun GrantView(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .height(72.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         shape = RoundedCornerShape(size = 8.dp),
@@ -144,7 +127,6 @@ fun GrantView(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = colorResource(id = R.color.white))
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -163,7 +145,6 @@ fun GrantView(
                         fontWeight = FontWeight.Medium,
                         fontSize = 22.sp,
                         letterSpacing = 0.5.sp,
-                        color = colorResource(id = R.color.black),
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -174,7 +155,6 @@ fun GrantView(
                         fontWeight = FontWeight.Medium,
                         fontSize = 18.sp,
                         letterSpacing = 0.5.sp,
-                        color = colorResource(id = R.color.black),
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -216,8 +196,7 @@ fun EmailInputView(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .background(color = colorResource(id = R.color.white)),
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val focusManager = LocalFocusManager.current
@@ -233,17 +212,12 @@ fun EmailInputView(
                 placeholder = {
                     Text(
                         text = stringResource(id = R.string.email_input_hint),
-                        color = colorResource(id = R.color.black).copy(alpha = .5f)
                     )
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    cursorColor = colorResource(id = R.color.brand),
-                    disabledTextColor = colorResource(id = R.color.gray),
-                    focusedTextColor = colorResource(id = R.color.black),
-                    unfocusedTextColor = colorResource(id = R.color.black),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
@@ -252,7 +226,6 @@ fun EmailInputView(
             Spacer(modifier = Modifier.width(16.dp))
 
             FloatingActionButton(
-                containerColor = colorResource(id = R.color.brand),
                 onClick = {
                     if (input.value.isEmpty()) return@FloatingActionButton
                     input.value = input.value.trim()
@@ -270,7 +243,6 @@ fun EmailInputView(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(id = R.string.grant_access),
-                    tint = colorResource(id = R.color.white),
                 )
             }
 
