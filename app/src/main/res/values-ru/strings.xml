@@ -7,4 +7,7 @@
     <string name="share_link_via">Поделиться ссылкой через…</string>
 
     <string name="item_presentation_open_clicker">Открыть кликер</string>
+    <string name="email_input_hint">Введите Email</string>
+    <string name="grant_access">Предоставить доступ</string>
+    <string name="revoke_access">Аннулировать доступ</string>
 </resources>

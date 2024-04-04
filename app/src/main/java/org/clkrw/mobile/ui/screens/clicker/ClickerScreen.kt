@@ -204,7 +204,8 @@ fun ClickerViewPreview() {
             createdAt = "2024-04-03T16:16:26.000Z",
             pictureURL = "",
             googleId = ""
-        )
+        ),
+        grants = emptyList(),
     )
     ClickerView(
         ClickerUiState.Loaded(show),

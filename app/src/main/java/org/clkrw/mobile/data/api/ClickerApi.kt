@@ -4,6 +4,7 @@ package org.clkrw.mobile.data.api
 import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.model.User
+import retrofit2.Response
 import org.json.JSONObject
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -21,13 +22,13 @@ interface ClickerApi {
     suspend fun openAccessToShow(
         @Path("showId") showId: String,
         @Path("userEmail") userEmail: String,
-    )
+    ) : Response<Void>
 
     @GET("/api/user/grant/{showId}/to/{userEmail}/with/close")
     suspend fun closeAccessToShow(
         @Path("showId") showId: String,
         @Path("userEmail") userEmail: String,
-    )
+    ) : Response<Void>
 
     @GET("/api/show/get")
     suspend fun getShows(): List<Show>

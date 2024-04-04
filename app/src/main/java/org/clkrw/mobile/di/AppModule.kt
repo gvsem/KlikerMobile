@@ -15,9 +15,11 @@ import okhttp3.Response
 import org.clkrw.mobile.data.api.ClickerApi
 import org.clkrw.mobile.data.auth.AuthServiceImpl
 import org.clkrw.mobile.data.bus.ShowSseBusImpl
+import org.clkrw.mobile.data.repository.RolesRepositoryImpl
 import org.clkrw.mobile.data.repository.ShowRepositoryImpl
 import org.clkrw.mobile.domain.auth.AuthService
 import org.clkrw.mobile.domain.bus.ShowSseBus
+import org.clkrw.mobile.domain.repository.RolesRepository
 import org.clkrw.mobile.domain.repository.ShowRepository
 import org.clkrw.mobile.util.SseClient
 import retrofit2.Retrofit
@@ -88,4 +90,11 @@ object AppModule {
     @Singleton
     fun provideShowSseBus(client: SseClient): ShowSseBus =
         ShowSseBusImpl(client)
+
+
+    @Provides
+    @Singleton
+    fun provideRolesRepository(clickerApi: ClickerApi): RolesRepository =
+        RolesRepositoryImpl(clickerApi)
+
 }

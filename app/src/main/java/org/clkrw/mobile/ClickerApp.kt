@@ -67,11 +67,12 @@ fun ClickerApp() {
             }
             composable(route = "${Screen.Presentation.name}/{showId}") {
                 PresentationScreen(
+                    viewModel = hiltViewModel(),
                     modifier = Modifier.padding(paddingValues)
                 )
 
             }
-            composable(route = "${Screen.Clicker.name}/{showId}") { backStackEntry ->
+            composable(route = "${Screen.Clicker.name}/{showId}") {
                 ClickerScreen(
                     viewModel = hiltViewModel(),
                     modifier = Modifier.padding(paddingValues)
