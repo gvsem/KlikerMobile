@@ -14,8 +14,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.clkrw.mobile.data.api.ClickerApi
 import org.clkrw.mobile.data.auth.AuthServiceImpl
+import org.clkrw.mobile.data.repository.RolesRepositoryImpl
 import org.clkrw.mobile.data.repository.ShowRepositoryImpl
 import org.clkrw.mobile.domain.auth.AuthService
+import org.clkrw.mobile.domain.repository.RolesRepository
 import org.clkrw.mobile.domain.repository.ShowRepository
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -66,4 +68,9 @@ object AppModule {
     @Singleton
     fun provideShowRepository(clickerApi: ClickerApi): ShowRepository =
         ShowRepositoryImpl(clickerApi)
+
+    @Provides
+    @Singleton
+    fun provideRolesRepository(clickerApi: ClickerApi): RolesRepository =
+        RolesRepositoryImpl(clickerApi)
 }

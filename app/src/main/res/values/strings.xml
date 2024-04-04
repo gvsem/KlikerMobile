@@ -21,4 +21,7 @@
     <string name="displays_count">Displays Count</string>
     <string name="edit_presentation">Edit Presentaion</string>
     <string name="start_presentation">Start presentation</string>
+    <string name="email_input_hint">Enter Email</string>
+    <string name="grant_access">Grant Access</string>
+    <string name="revoke_access">Revoke Access</string>
 </resources>

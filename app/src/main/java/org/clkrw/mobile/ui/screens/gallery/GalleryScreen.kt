@@ -230,7 +230,8 @@ fun ShowCardPreview() {
         "123",
         listOf(
             ShortUrl("123")
-        )
+        ),
+        emptyList(),
     )
 
     ShowCard(
