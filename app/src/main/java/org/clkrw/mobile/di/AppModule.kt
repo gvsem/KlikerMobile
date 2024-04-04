@@ -14,9 +14,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.clkrw.mobile.data.api.ClickerApi
 import org.clkrw.mobile.data.auth.AuthServiceImpl
+import org.clkrw.mobile.data.bus.ShowSseBusImpl
 import org.clkrw.mobile.data.repository.ShowRepositoryImpl
 import org.clkrw.mobile.domain.auth.AuthService
+import org.clkrw.mobile.domain.bus.ShowSseBus
 import org.clkrw.mobile.domain.repository.ShowRepository
+import org.clkrw.mobile.util.SseClient
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -43,22 +46,28 @@ object AppModule {
     @Provides
     fun providesBaseUrl(): String = "https://clkr.me"
 
-    @Provides
     @Singleton
-    fun provideRetrofit(baseUrl: String, authService: AuthService): Retrofit {
-        val httpClient = OkHttpClient().newBuilder().addInterceptor(AuthAdder(authService)).build()
+    @Provides
+    fun okHttpClient(authService: AuthService): OkHttpClient =
+        OkHttpClient().newBuilder().addInterceptor(AuthAdder(authService)).build()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(client: OkHttpClient, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .baseUrl(baseUrl)
-            .client(httpClient)
+            .client(client)
             .build()
     }
+
 
     @Provides
     @Singleton
     fun provideClickerApi(retrofit: Retrofit): ClickerApi = retrofit.create(ClickerApi::class.java)
 
     @Provides
+    @Singleton
     fun provideAuthService(@ApplicationContext appContext: Context): AuthService =
         AuthServiceImpl(appContext)
 
@@ -66,4 +75,14 @@ object AppModule {
     @Singleton
     fun provideShowRepository(clickerApi: ClickerApi): ShowRepository =
         ShowRepositoryImpl(clickerApi)
+
+    @Provides
+    @Singleton
+    fun provideSseClient(client: OkHttpClient, baseUrl: String): SseClient =
+        SseClient(client, baseUrl)
+
+    @Provides
+    @Singleton
+    fun provideShowSseBus(client: SseClient): ShowSseBus =
+        ShowSseBusImpl(client)
 }

@@ -7,9 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.clkrw.mobile.domain.bus.ShowSseBus
 import org.clkrw.mobile.domain.repository.ShowRepository
 import javax.inject.Inject
 
@@ -17,19 +18,42 @@ import javax.inject.Inject
 class ClickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val showingRepository: ShowRepository,
+    private val showSseBus: ShowSseBus,
 ) : ViewModel() {
     private val showId: String = checkNotNull(savedStateHandle["showId"])
 
-    // Fetch the relevant user information from the data layer,
-    // ie. userInfoRepository, based on the passed userId argument
     var state: ClickerUiState by mutableStateOf(ClickerUiState.Loading)
         private set
 
+    var countsState: ClickerCountsUiState by mutableStateOf(ClickerCountsUiState())
+        private set
+
     init {
+        loadState()
+    }
+
+    private fun loadState() {
         viewModelScope.launch {
             val show = showingRepository.getShow(showId)
+            countsState = countsState.copy(
+                slideNo = show.currentSlideNo,
+                totalSlides = show.maxSlidesCount
+            )
             state = ClickerUiState.Loaded(show)
         }
+    }
+
+
+    init {
+        showSseBus
+            .getClickerEvents(showId)
+            .onEach {
+                countsState =
+                    ClickerCountsUiState(it.slideNo, it.totalSlides, it.displaysOnline)
+            }
+            .launchIn(
+                viewModelScope,
+            )
     }
 
 
@@ -39,6 +63,7 @@ class ClickerViewModel @Inject constructor(
                 viewModelScope.launch {
                     val currentState = state
                     if (currentState is ClickerUiState.Loaded) {
+                        countsState = countsState.invalidate()
                         showingRepository.nextSlide(showId)
                     }
                 }
@@ -48,6 +73,7 @@ class ClickerViewModel @Inject constructor(
                 viewModelScope.launch {
                     val currentState = state
                     if (currentState is ClickerUiState.Loaded) {
+                        countsState = countsState.invalidate()
                         showingRepository.prevSlide(showId)
                     }
                 }
