@@ -29,47 +29,51 @@ class SseClient(
         getEventsFlow(url, eventType, T::class)
 
     fun <T : Any> getEventsFlow(url: String, eventType: String, kClass: KClass<T>): Flow<T> = flow {
-        val serializer = serializer(kClass.javaObjectType)
 
-        // Gets HttpURLConnection. Blocking function.  Should run in background
-        val request = Request.Builder()
-            .method("GET", null)
-            .addHeader("Accept", "text/event-stream")
-            .url("$baseUrl$url")
-            .build()
+        while (true) {
+            val serializer = serializer(kClass.javaObjectType)
+
+            // Gets HttpURLConnection. Blocking function.  Should run in background
+            val request = Request.Builder()
+                .method("GET", null)
+                .addHeader("Accept", "text/event-stream")
+                .url("$baseUrl$url")
+                .build()
 
 
-        val inputReader = client.newCall(request).execute().body!!.byteStream().bufferedReader()
+            val inputReader = client.newCall(request).execute().body!!.byteStream().bufferedReader()
 
-        val event = Event()
+            val event = Event()
 
-        // run forever
-        try {
-            while (coroutineContext.isActive) {
-                val line =
-                    inputReader.readLine() // Blocking function. Read stream until \n is found
+            // run forever
+            try {
+                while (coroutineContext.isActive) {
+                    val line =
+                        inputReader.readLine() // Blocking function. Read stream until \n is found
 
-                when {
-                    line.startsWith("event:") -> { // get event name
-                        event.name = line.substring(6).trim()
-                    }
+                    when {
+                        line.startsWith("event:") -> { // get event name
+                            event.name = line.substring(6).trim()
+                        }
 
-                    line.startsWith("data:") -> { // get data
-                        event.data = line.substring(5).trim()
-                    }
+                        line.startsWith("data:") -> { // get data
+                            event.data = line.substring(5).trim()
+                        }
 
-                    line.isEmpty() -> { // empty line, finished block. Emit the event
-                        if (event.name == eventType) {
-                            @Suppress("UNCHECKED_CAST")
-                            val deserialized = Json.decodeFromString(serializer, event.data) as T
-                            emit(deserialized)
-                            event.data = ""
-                            event.name = ""
+                        line.isEmpty() -> { // empty line, finished block. Emit the event
+                            if (event.name == eventType) {
+                                @Suppress("UNCHECKED_CAST")
+                                val deserialized = Json.decodeFromString(serializer, event.data) as T
+                                emit(deserialized)
+                                event.data = ""
+                                event.name = ""
+                            }
                         }
                     }
                 }
+            } catch (_: IOException) {
             }
-        } catch (_: IOException) {
         }
+
     }.flowOn(Dispatchers.IO)
 }
