@@ -1,15 +1,11 @@
 package org.clkrw.mobile.ui.screens.presentation
 
-import android.graphics.BitmapFactory
-import android.util.Base64
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -40,14 +35,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -60,7 +51,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Grant
-import org.clkrw.mobile.ui.screens.clicker.ClickerUiEvent
 import org.clkrw.mobile.ui.theme.Typography
 
 @Composable
@@ -96,7 +86,10 @@ fun PresentationView(
         Spacer(modifier = Modifier.height(16.dp))
         Box(modifier = Modifier.fillMaxHeight()) {
             GrantsView(state, viewModel = viewModel)
-            EmailInputView(modifier = Modifier.align(Alignment.BottomStart), viewModel = viewModel)
+            EmailInputView(
+                modifier = Modifier.align(Alignment.BottomStart),
+                viewModel = viewModel,
+            )
         }
     }
 }
@@ -202,9 +195,9 @@ fun GrantView(
 fun EmailInputView(
     viewModel: PresentationViewModel,
     modifier: Modifier = Modifier,
-    onAddButtonClick: (String) -> Unit = {},
 ) {
-    val input = remember { mutableStateOf("") }
+    val emailInputState = remember { mutableStateOf("") }
+    val grantAccessErrorState = remember { mutableStateOf(false) }
 
     Card(
         shape = RoundedCornerShape(size = 8.dp),
@@ -217,14 +210,24 @@ fun EmailInputView(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = colorResource(id = R.color.white)),
+                .background(
+                    color = colorResource(
+                        id = if (grantAccessErrorState.value)
+                            R.color.error
+                        else
+                            R.color.white
+                    )
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val focusManager = LocalFocusManager.current
             TextField(
                 modifier = Modifier.weight(1f),
-                value = input.value,
-                onValueChange = { newValue -> input.value = newValue },
+                value = emailInputState.value,
+                onValueChange = { newValue ->
+                    emailInputState.value = newValue
+                    grantAccessErrorState.value = false
+                },
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,
@@ -254,10 +257,14 @@ fun EmailInputView(
             FloatingActionButton(
                 containerColor = colorResource(id = R.color.brand),
                 onClick = {
-                    if (input.value.isEmpty()) return@FloatingActionButton
-                    input.value = input.value.trim()
-                    viewModel.onEvent(PresentationUiEvent.GrantAccess(input.value.trim()))
-                    input.value = ""
+                    if (emailInputState.value.isEmpty()) return@FloatingActionButton
+                    emailInputState.value = emailInputState.value.trim()
+                    viewModel.onEvent(
+                        PresentationUiEvent.GrantAccess(
+                            emailInputState,
+                            grantAccessErrorState
+                        )
+                    )
                     focusManager.clearFocus()
                 },
                 shape = CircleShape,

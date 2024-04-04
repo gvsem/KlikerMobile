@@ -36,11 +36,17 @@ class PresentationViewModel @Inject constructor(
         when (event) {
             is PresentationUiEvent.GrantAccess -> {
                 viewModelScope.launch {
-                    val result = rolesRepository.grantAccess(showId, event.userEmail)
+                    val result = rolesRepository.grantAccess(showId, event.emailInputState.value)
 
                     when (result) {
-                        ResponseCode.CREATED, ResponseCode.REPEATED -> {}
-                        ResponseCode.NOT_FOUND, ResponseCode.UNKNOWN -> {}
+                        ResponseCode.CREATED, ResponseCode.REPEATED -> {
+                            event.emailInputState.value = ""
+                            event.grantAccessErrorState.value = false
+                        }
+
+                        ResponseCode.NOT_FOUND, ResponseCode.UNKNOWN -> {
+                            event.grantAccessErrorState.value = true
+                        }
                     }
                 }
             }

@@ -12,4 +12,5 @@
     <color name="brand_shadow">#394A67</color>
     <color name="yellow_shadow">#ECCE87</color>
     <color name="gray">#B3B3B3</color>
+    <color name="error">#FD97A5</color>
 </resources>
