@@ -10,4 +10,5 @@ data class Show(
     val maxSlidesCount: Int,
     val updatedAt: String,
     val shorts: List<ShortUrl>,
+    val owner: User
 )

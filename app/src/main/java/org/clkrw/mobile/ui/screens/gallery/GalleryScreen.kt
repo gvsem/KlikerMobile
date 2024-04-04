@@ -2,6 +2,7 @@ package org.clkrw.mobile.ui.screens.gallery
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.text.format.DateUtils.getRelativeDateTimeString
 import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +45,9 @@ import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Presentation
 import org.clkrw.mobile.domain.model.ShortUrl
 import org.clkrw.mobile.domain.model.Show
+import org.clkrw.mobile.domain.model.User
 import org.clkrw.mobile.ui.theme.Typography
+import org.clkrw.mobile.util.DateUtils
 
 
 @Composable
@@ -55,6 +58,8 @@ fun GalleryScreen(
     modifier: Modifier = Modifier,
 ) {
     val state = viewModel.state
+
+    val context = LocalContext.current
 
     if (state is GalleryUiState.Loaded) {
         ShowsList(
@@ -144,7 +149,7 @@ fun ShowCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "AUTHOR",
+                                text = show.owner.firstName.substring(0, 1) + ". " + show.owner.lastName,
                                 style = Typography.bodyMedium,
                             )
                         }
@@ -157,7 +162,7 @@ fun ShowCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = show.updatedAt,
+                                text = DateUtils.toString(show.updatedAt, context).toString(),
                                 style = Typography.bodyMedium,
                             )
                         }
@@ -169,7 +174,7 @@ fun ShowCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val shortIdentifier = show.shorts.first().shortIdentifier
                     Text(
-                        text = shortIdentifier,
+                        text = "clkr.me/" + shortIdentifier,
                         style = Typography.bodyMedium,
                     )
 
@@ -230,7 +235,17 @@ fun ShowCardPreview() {
         "123",
         listOf(
             ShortUrl("123")
+        ),
+        owner = User(
+            id = "1",
+            firstName = "Loler",
+            lastName = "Laler",
+            email = "lol@gmail.com",
+            createdAt = "2024-04-03T16:16:26.000Z",
+            pictureURL = "",
+            googleId = ""
         )
+
     )
 
     ShowCard(

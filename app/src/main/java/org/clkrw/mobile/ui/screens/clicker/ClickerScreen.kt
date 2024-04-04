@@ -42,6 +42,7 @@ import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Presentation
 import org.clkrw.mobile.domain.model.ShortUrl
 import org.clkrw.mobile.domain.model.Show
+import org.clkrw.mobile.domain.model.User
 import org.clkrw.mobile.ui.theme.Typography
 
 @Composable
@@ -154,6 +155,15 @@ fun ClickerViewPreview() {
         "123",
         listOf(
             ShortUrl("123")
+        ),
+        owner = User(
+            id = "1",
+            firstName = "Loler",
+            lastName = "Laler",
+            email = "lol@gmail.com",
+            createdAt = "2024-04-03T16:16:26.000Z",
+            pictureURL = "",
+            googleId = ""
         )
     )
     ClickerView(
