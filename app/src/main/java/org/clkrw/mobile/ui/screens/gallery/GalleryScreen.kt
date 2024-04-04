@@ -1,7 +1,9 @@
 package org.clkrw.mobile.ui.screens.gallery
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.text.format.DateUtils.getRelativeDateTimeString
 import android.util.Base64
 import androidx.compose.foundation.Image
@@ -90,6 +92,7 @@ fun ShowsList(
     }
 }
 
+@SuppressLint("IntentReset")
 @Composable
 fun ShowCard(
     show: Show,
@@ -192,7 +195,7 @@ fun ShowCard(
                     IconButton(onClick = {
                         val intent = Intent(Intent.ACTION_SEND)
                         intent.type = "text/plain"
-                        intent.putExtra(Intent.EXTRA_TEXT, link)
+                        intent.data = Uri.parse("https://clkr.me/$shortIdentifier")
                         context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
                     }) {
                         Icon(
