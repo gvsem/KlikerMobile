@@ -65,6 +65,7 @@ fun GalleryScreen(
     if (state is GalleryUiState.Loaded) {
         ShowsList(
             shows = state.presentations,
+            currentUserId = state.currentUser.id,
             onClickEditPresentation = onClickEditPresentation,
             onClickStartPresentation = onClickStartPresentation,
             modifier = modifier
@@ -75,6 +76,7 @@ fun GalleryScreen(
 @Composable
 fun ShowsList(
     shows: List<Show>,
+    currentUserId: String,
     onClickEditPresentation: (Show) -> Unit,
     onClickStartPresentation: (Show) -> Unit,
     modifier: Modifier = Modifier,
@@ -83,6 +85,7 @@ fun ShowsList(
         items(shows) { show ->
             ShowCard(
                 show = show,
+                currentUserId = currentUserId,
                 onClickEditPresentation = { onClickEditPresentation(show) },
                 onClickStartPresentation = { onClickStartPresentation(show) }
             )
@@ -93,6 +96,7 @@ fun ShowsList(
 @Composable
 fun ShowCard(
     show: Show,
+    currentUserId: String,
     onClickEditPresentation: () -> Unit,
     onClickStartPresentation: () -> Unit,
     modifier: Modifier = Modifier,
@@ -206,14 +210,20 @@ fun ShowCard(
 
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxHeight().width(40.dp),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(40.dp),
             ) {
-                IconButton(onClick = onClickEditPresentation) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = stringResource(R.string.edit_presentation),
-                        modifier = Modifier.size(40.dp)
-                    )
+                Box(modifier = Modifier.size(40.dp)) {
+                    if (show.owner.id == currentUserId) {
+                        IconButton(onClick = onClickEditPresentation) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = stringResource(R.string.edit_presentation),
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 IconButton(onClick = onClickStartPresentation) {
@@ -260,6 +270,7 @@ fun ShowCardPreview() {
 
     ShowCard(
         show,
+        "",
         {},
         {},
     )

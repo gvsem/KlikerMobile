@@ -8,18 +8,21 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.clkrw.mobile.domain.repository.ShowRepository
+import org.clkrw.mobile.domain.repository.UserRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     private val presentationRepository: ShowRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     var state by mutableStateOf<GalleryUiState>(GalleryUiState.Loading)
 
     init {
         viewModelScope.launch {
             val shows = presentationRepository.getShows()
-            state = GalleryUiState.Loaded(shows)
+            val user = userRepository.getCurrentUser()
+            state = GalleryUiState.Loaded(shows, user)
         }
     }
 }
