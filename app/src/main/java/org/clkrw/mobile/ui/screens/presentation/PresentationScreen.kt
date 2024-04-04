@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Grant
+import org.clkrw.mobile.ui.screens.clicker.ClickerUiEvent
 import org.clkrw.mobile.ui.theme.Typography
 
 @Composable
@@ -70,13 +71,17 @@ fun PresentationScreen(
     val state = viewModel.state
 
     if (state is PresentationUiState.Loaded) {
-        PresentationView(state, modifier)
+        PresentationView(state, modifier, viewModel)
     }
 }
 
 
 @Composable
-fun PresentationView(state: PresentationUiState.Loaded, modifier: Modifier = Modifier) {
+fun PresentationView(
+    state: PresentationUiState.Loaded,
+    modifier: Modifier = Modifier,
+    viewModel: PresentationViewModel,
+) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,8 +95,8 @@ fun PresentationView(state: PresentationUiState.Loaded, modifier: Modifier = Mod
         )
         Spacer(modifier = Modifier.height(16.dp))
         Box(modifier = Modifier.fillMaxHeight()) {
-            GrantsView(state)
-            EmailInputView(modifier = Modifier.align(Alignment.BottomStart))
+            GrantsView(state, viewModel = viewModel)
+            EmailInputView(modifier = Modifier.align(Alignment.BottomStart), viewModel = viewModel)
         }
     }
 }
@@ -101,6 +106,7 @@ fun PresentationView(state: PresentationUiState.Loaded, modifier: Modifier = Mod
 fun GrantsView(
     state: PresentationUiState.Loaded,
     modifier: Modifier = Modifier,
+    viewModel: PresentationViewModel,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
@@ -109,6 +115,8 @@ fun GrantsView(
         items(state.show.grants) { grant ->
             GrantView(
                 grant = grant,
+                ownerId = state.show.owner.id,
+                viewModel = viewModel,
             )
         }
         item { Spacer(modifier = Modifier.height(64.dp)) }
@@ -119,7 +127,9 @@ fun GrantsView(
 @Composable
 fun GrantView(
     grant: Grant,
+    ownerId: String,
     modifier: Modifier = Modifier,
+    viewModel: PresentationViewModel,
     onAdd: (String) -> Unit = {},
     onDeleteButtonClick: (Grant) -> Unit = {},
 ) {
@@ -146,7 +156,7 @@ fun GrantView(
                     .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Column (modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${user.firstName} ${user.lastName}",
                     style = TextStyle(
@@ -170,15 +180,18 @@ fun GrantView(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            IconButton(
-                onClick = { onDeleteButtonClick(grant) },
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = stringResource(id = R.string.revoke_access),
-                )
+
+            if (user.id != ownerId) {
+                IconButton(
+                    onClick = { viewModel.onEvent(PresentationUiEvent.RevokeAccess(user.email)) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(id = R.string.revoke_access),
+                    )
+                }
             }
         }
     }
@@ -187,6 +200,7 @@ fun GrantView(
 
 @Composable
 fun EmailInputView(
+    viewModel: PresentationViewModel,
     modifier: Modifier = Modifier,
     onAddButtonClick: (String) -> Unit = {},
 ) {
@@ -241,7 +255,8 @@ fun EmailInputView(
                 containerColor = colorResource(id = R.color.brand),
                 onClick = {
                     if (input.value.isEmpty()) return@FloatingActionButton
-                    onAddButtonClick(input.value)
+                    input.value = input.value.trim()
+                    viewModel.onEvent(PresentationUiEvent.GrantAccess(input.value.trim()))
                     input.value = ""
                     focusManager.clearFocus()
                 },

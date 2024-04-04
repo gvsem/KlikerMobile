@@ -182,8 +182,9 @@ fun ShowCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val shortIdentifier = show.shorts.first().shortIdentifier
+                    val link = "clkr.me/$shortIdentifier"
                     Text(
-                        text = "clkr.me/" + shortIdentifier,
+                        text = link,
                         style = Typography.bodyMedium,
                     )
 
@@ -191,7 +192,7 @@ fun ShowCard(
                     IconButton(onClick = {
                         val intent = Intent(Intent.ACTION_SEND)
                         intent.type = "text/plain"
-                        intent.putExtra(Intent.EXTRA_TEXT, shortIdentifier)
+                        intent.putExtra(Intent.EXTRA_TEXT, link)
                         context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
                     }) {
                         Icon(

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.clkrw.mobile.domain.repository.ResponseCode
 import org.clkrw.mobile.domain.repository.RolesRepository
 import org.clkrw.mobile.domain.repository.ShowRepository
 import javax.inject.Inject
@@ -35,7 +36,12 @@ class PresentationViewModel @Inject constructor(
         when (event) {
             is PresentationUiEvent.GrantAccess -> {
                 viewModelScope.launch {
-                    rolesRepository.grantAccess(showId, event.userEmail)
+                    val result = rolesRepository.grantAccess(showId, event.userEmail)
+
+                    when (result) {
+                        ResponseCode.CREATED, ResponseCode.REPEATED -> {}
+                        ResponseCode.NOT_FOUND, ResponseCode.UNKNOWN -> {}
+                    }
                 }
             }
 
