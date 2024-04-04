@@ -103,14 +103,21 @@ fun GrantsView(
     modifier: Modifier = Modifier,
     viewModel: PresentationViewModel,
 ) {
+    val ownerId = state.show.owner.id
+    val grants = state.show.grants
+        .sortedWith(
+            compareBy<Grant> { it.toWhomGranted.id != ownerId }
+                .thenBy { it.toWhomGranted.firstName }
+                .thenBy { it.toWhomGranted.lastName })
+
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Top,
     ) {
-        items(state.show.grants) { grant ->
+        items(grants) { grant ->
             GrantView(
                 grant = grant,
-                ownerId = state.show.owner.id,
+                ownerId = ownerId,
                 viewModel = viewModel,
             )
         }
@@ -138,7 +145,13 @@ fun GrantView(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = colorResource(id = R.color.white))
+                .background(
+                    color = colorResource(
+                        id = if (user.id == ownerId)
+                            R.color.yellow
+                        else R.color.white
+                    )
+                )
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
