@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Grant
+import org.clkrw.mobile.ui.screens.OpState
 import org.clkrw.mobile.ui.theme.Typography
 
 @Composable
@@ -121,12 +123,11 @@ fun GrantsView(
 fun GrantView(
     grant: Grant,
     ownerId: String,
-    modifier: Modifier = Modifier,
     viewModel: PresentationViewModel,
-    onAdd: (String) -> Unit = {},
-    onDeleteButtonClick: (Grant) -> Unit = {},
 ) {
     val user = grant.toWhomGranted
+    val revokeAccessOpState = remember { mutableStateOf(OpState.DONE) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -176,14 +177,27 @@ fun GrantView(
 
             if (user.id != ownerId) {
                 IconButton(
-                    onClick = { viewModel.onEvent(PresentationUiEvent.RevokeAccess(user.email)) },
-                    modifier = Modifier.size(32.dp)
+                    onClick = {
+                        viewModel.onEvent(
+                            PresentationUiEvent.RevokeAccess(
+                                userEmail = user.email,
+                                revokeAccessOpState = revokeAccessOpState
+                            )
+                        )
+                    },
+                    modifier = Modifier.size(32.dp),
+                    enabled = (revokeAccessOpState.value != OpState.PROCESSING)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = stringResource(id = R.string.revoke_access),
-                    )
+                    val iconModifier = Modifier.size(24.dp)
+                    if (revokeAccessOpState.value == OpState.PROCESSING) {
+                        CircularProgressIndicator(modifier = iconModifier)
+                    } else {
+                        Icon(
+                            modifier = iconModifier,
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = stringResource(id = R.string.revoke_access),
+                        )
+                    }
                 }
             }
         }
@@ -197,7 +211,7 @@ fun EmailInputView(
     modifier: Modifier = Modifier,
 ) {
     val emailInputState = remember { mutableStateOf("") }
-    val grantAccessErrorState = remember { mutableStateOf(false) }
+    val grantAccessOpState = remember { mutableStateOf(OpState.DONE) }
 
     Card(
         shape = RoundedCornerShape(size = 8.dp),
@@ -212,7 +226,7 @@ fun EmailInputView(
                 .fillMaxSize()
                 .background(
                     color = colorResource(
-                        id = if (grantAccessErrorState.value)
+                        id = if (grantAccessOpState.value == OpState.ERROR)
                             R.color.error
                         else
                             R.color.white
@@ -226,7 +240,7 @@ fun EmailInputView(
                 value = emailInputState.value,
                 onValueChange = { newValue ->
                     emailInputState.value = newValue
-                    grantAccessErrorState.value = false
+                    grantAccessOpState.value = OpState.DONE
                 },
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -254,31 +268,42 @@ fun EmailInputView(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            FloatingActionButton(
-                containerColor = colorResource(id = R.color.brand),
-                onClick = {
-                    if (emailInputState.value.isEmpty()) return@FloatingActionButton
-                    emailInputState.value = emailInputState.value.trim()
-                    viewModel.onEvent(
-                        PresentationUiEvent.GrantAccess(
-                            emailInputState,
-                            grantAccessErrorState
+            val buttonColor = colorResource(id = R.color.brand)
+            val buttonModifier = Modifier.size(40.dp)
+            if (grantAccessOpState.value == OpState.PROCESSING) {
+                CircularProgressIndicator(
+                    color = buttonColor,
+                    modifier = buttonModifier,
+                )
+            } else {
+                FloatingActionButton(
+                    containerColor = buttonColor,
+                    onClick = {
+                        if (emailInputState.value.isBlank())
+                            return@FloatingActionButton
+
+                        emailInputState.value = emailInputState.value.trim()
+                        viewModel.onEvent(
+                            PresentationUiEvent.GrantAccess(
+                                emailInputState,
+                                grantAccessOpState,
+                            )
                         )
+                        focusManager.clearFocus()
+                    },
+                    shape = CircleShape,
+                    modifier = buttonModifier,
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.grant_access),
+                        tint = colorResource(id = R.color.white),
                     )
-                    focusManager.clearFocus()
-                },
-                shape = CircleShape,
-                modifier = Modifier.size(40.dp),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 0.dp,
-                    pressedElevation = 0.dp,
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.grant_access),
-                    tint = colorResource(id = R.color.white),
-                )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
