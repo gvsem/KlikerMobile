@@ -21,6 +21,7 @@ import org.clkrw.mobile.domain.bus.ShowSseBus
 import org.clkrw.mobile.domain.repository.ShowRepository
 import org.clkrw.mobile.util.SseClient
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 private val json = Json {
@@ -49,7 +50,9 @@ object AppModule {
     @Singleton
     @Provides
     fun okHttpClient(authService: AuthService): OkHttpClient =
-        OkHttpClient().newBuilder().addInterceptor(AuthAdder(authService)).build()
+        OkHttpClient().newBuilder().addInterceptor(AuthAdder(authService))
+            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS).build()
 
     @Singleton
     @Provides

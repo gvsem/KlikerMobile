@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -103,7 +104,8 @@ fun ClickerScreen(
                         }
                     }
                     true
-                }
+                },
+            viewModel = viewModel
         )
 
         if (!hasFocus) {
@@ -120,6 +122,7 @@ fun ClickerView(
     state: ClickerUiState.Loaded,
     countsState: ClickerCountsUiState,
     modifier: Modifier = Modifier,
+    viewModel: ClickerViewModel? = null
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -131,6 +134,14 @@ fun ClickerView(
         Text(
             state.show.presentation.title,
             style = Typography.displayLarge
+        )
+        LaserViewComposable (
+            modifier = Modifier.fillMaxWidth().aspectRatio(16.0f / 9.0f),
+            callback = { b: Boolean, x: Float, y: Float ->
+                run {
+                    viewModel?.onLaserEvent(b, x, y)
+                }
+            }
         )
         Row(horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -197,6 +208,6 @@ fun ClickerViewPreview() {
     )
     ClickerView(
         ClickerUiState.Loaded(show),
-        ClickerCountsUiState(null, 5, null),
+        ClickerCountsUiState(null, 5, null)
     )
 }

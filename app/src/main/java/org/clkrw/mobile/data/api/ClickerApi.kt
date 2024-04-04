@@ -1,8 +1,11 @@
 package org.clkrw.mobile.data.api
 
 
+import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Show
 import org.clkrw.mobile.domain.model.User
+import org.json.JSONObject
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -39,5 +42,5 @@ interface ClickerApi {
     suspend fun prevSlide(@Path("showId") showId: String)
 
     @POST("/clicker/{showId}/laser")
-    suspend fun laserEvent(@Path("showId") showId: String)
+    suspend fun laserEvent(@Path("showId") showId: String, @Body data : LaserEvent)
 }

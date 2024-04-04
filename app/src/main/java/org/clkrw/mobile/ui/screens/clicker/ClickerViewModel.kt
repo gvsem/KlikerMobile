@@ -1,5 +1,6 @@
 package org.clkrw.mobile.ui.screens.clicker
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -78,6 +79,13 @@ class ClickerViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun onLaserEvent(type: Boolean, x : Float, y : Float) {
+        viewModelScope.launch {
+            Log.d("INFO", "$type $x $y")
+            showingRepository.laser(showId, type, x, y)
         }
     }
 }
