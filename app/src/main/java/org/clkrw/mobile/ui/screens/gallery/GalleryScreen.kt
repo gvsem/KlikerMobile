@@ -199,9 +199,7 @@ fun ShowCard(
                             val date = DateUtils.toString(show.updatedAt, context)
                             Text(
                                 text = date.toString(),
-                                style = Typography.bodyMedium,
-                                overflow = TextOverflow.Ellipsis,
-                                minLines = 2
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
