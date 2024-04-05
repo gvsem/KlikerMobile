@@ -12,10 +12,17 @@ class DateUtils {
 
     companion object {
 
-        fun toString(dateStr: String, context: Context) : CharSequence {
+        fun toString(dateStr: String, context: Context): CharSequence {
             return try {
-                val date: LocalDateTime = LocalDateTime.parse(dateStr, DateTimeFormatter.ISO_OFFSET_DATE_TIME)!!
-                getRelativeDateTimeString(context, date.toEpochSecond(ZoneOffset.UTC) * 1000, DAY_IN_MILLIS, DAY_IN_MILLIS, 0)
+                val date: LocalDateTime =
+                    LocalDateTime.parse(dateStr, DateTimeFormatter.ISO_OFFSET_DATE_TIME)!!
+                getRelativeDateTimeString(
+                    context,
+                    date.toEpochSecond(ZoneOffset.UTC) * 1000,
+                    DAY_IN_MILLIS,
+                    DAY_IN_MILLIS,
+                    0
+                )
             } catch (e: ParseException) {
                 dateStr
             }

@@ -21,13 +21,13 @@ interface ClickerApi {
     suspend fun openAccessToShow(
         @Path("showId") showId: String,
         @Path("userEmail") userEmail: String,
-    ) : Response<Void>
+    ): Response<Void>
 
     @GET("/api/user/grant/{showId}/to/{userEmail}/with/close")
     suspend fun closeAccessToShow(
         @Path("showId") showId: String,
         @Path("userEmail") userEmail: String,
-    ) : Response<Void>
+    ): Response<Void>
 
     @GET("/api/show/get")
     suspend fun getShows(): List<Show>
@@ -42,5 +42,5 @@ interface ClickerApi {
     suspend fun prevSlide(@Path("showId") showId: String)
 
     @POST("/clicker/{showId}/laser")
-    suspend fun laserEvent(@Path("showId") showId: String, @Body data : LaserEvent)
+    suspend fun laserEvent(@Path("showId") showId: String, @Body data: LaserEvent)
 }

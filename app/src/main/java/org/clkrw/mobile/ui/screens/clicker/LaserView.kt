@@ -3,7 +3,6 @@ package org.clkrw.mobile.ui.screens.clicker
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceView
@@ -12,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import org.clkrw.mobile.R
+import org.clkrw.mobile.domain.model.LaserEvent
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
@@ -66,7 +66,7 @@ class LaserView @JvmOverloads constructor(
 
 class LatencyEventTracker<Event>(
     private val latency: Duration = DEFAULT_LATENCY,
-    private val callback: (Event) -> Unit
+    private val callback: (Event) -> Unit,
 ) {
     private var lastTimeMs = TimeSource.Monotonic.markNow()
 
@@ -85,8 +85,8 @@ class LatencyEventTracker<Event>(
 
 @Composable
 fun LaserViewComposable(
-    modifier : Modifier,
-    callback : (Boolean, Float, Float) -> Unit
+    modifier: Modifier,
+    onLaserEvent: (LaserEvent) -> Unit,
 ) {
 
     // Adds view to Compose
@@ -94,7 +94,8 @@ fun LaserViewComposable(
         modifier = modifier.fillMaxSize(), // Occupy the max size in the Compose UI tree
         factory = { context ->
 
-            val tracker = LatencyEventTracker<PointF> { callback(true, minOf(1.0f, maxOf(0.0f, it.x)), minOf(1.0f, maxOf(0.0f, it.y)))}
+            val tracker = LatencyEventTracker<LaserEvent>(callback = onLaserEvent)
+
             val surface = LaserView(context).apply {
                 var isInAction = false
 
@@ -104,19 +105,24 @@ fun LaserViewComposable(
                             this.start()
                             this.touch(event.x, event.y)
                             isInAction = true
-                            tracker.track(PointF(event.x / this.width, event.y / this.height))
+                            val x = (event.x / this.width).coerceIn(0f, 1f)
+                            val y = (event.y / this.height).coerceIn(0f, 1f)
+                            tracker.track(LaserEvent("on", x, y))
                         }
 
                         MotionEvent.ACTION_MOVE -> {
                             this.touch(event.x, event.y)
                             if (isInAction) {
-                                tracker.track(PointF(event.x / this.width, event.y / this.height))
+                                val x = (event.x / this.width).coerceIn(0f, 1f)
+                                val y = (event.y / this.height).coerceIn(0f, 1f)
+                                tracker.track(LaserEvent("on", x, y))
                             }
                         }
+
                         MotionEvent.ACTION_UP -> {
                             this.end()
                             isInAction = false
-                            callback(false, 0.0f, 0.0f)
+                            onLaserEvent(LaserEvent("off", 0.0f, 0.0f))
                         }
                     }
                     true

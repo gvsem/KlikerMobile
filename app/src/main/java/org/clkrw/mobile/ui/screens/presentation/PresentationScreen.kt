@@ -81,11 +81,6 @@ fun PresentationView(
             .fillMaxHeight()
             .padding(8.dp)
     ) {
-        Text(
-            text = state.show.presentation.title,
-            style = Typography.headlineLarge,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Box(modifier = Modifier.fillMaxHeight()) {
             GrantsView(state, viewModel = viewModel)
             EmailInputView(
@@ -138,6 +133,7 @@ fun GrantView(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .height(72.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(size = 8.dp),
@@ -170,7 +166,6 @@ fun GrantView(
                         fontWeight = FontWeight.Medium,
                         fontSize = 22.sp,
                         letterSpacing = 0.5.sp,
-                        color = colorResource(id = R.color.black),
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -181,7 +176,6 @@ fun GrantView(
                         fontWeight = FontWeight.Medium,
                         fontSize = 18.sp,
                         letterSpacing = 0.5.sp,
-                        color = colorResource(id = R.color.black),
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -263,17 +257,12 @@ fun EmailInputView(
                 placeholder = {
                     Text(
                         text = stringResource(id = R.string.email_input_hint),
-                        color = colorResource(id = R.color.black).copy(alpha = .5f)
                     )
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    cursorColor = colorResource(id = R.color.brand),
-                    disabledTextColor = colorResource(id = R.color.gray),
-                    focusedTextColor = colorResource(id = R.color.black),
-                    unfocusedTextColor = colorResource(id = R.color.black),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),

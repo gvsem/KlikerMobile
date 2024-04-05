@@ -1,5 +1,6 @@
 package org.clkrw.mobile.ui.screens.gallery
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -33,9 +35,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -92,6 +94,7 @@ fun ShowsList(
     }
 }
 
+@SuppressLint("IntentReset")
 @Composable
 fun ShowCard(
     show: Show,
@@ -101,6 +104,15 @@ fun ShowCard(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val shortIdentifier = show.shorts.first().shortIdentifier
+    val link = "clkr.me/$shortIdentifier"
+    val shareLinkViaStr = stringResource(id = R.string.share_link_via)
+    val onClickSharePresentation = {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, link)
+        context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
+    }
 
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
@@ -135,7 +147,9 @@ fun ShowCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(.5f)
@@ -164,7 +178,6 @@ fun ShowCard(
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = stringResource(id = R.string.author),
-                                tint = colorResource(id = R.color.black)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -180,17 +193,19 @@ fun ShowCard(
                             Icon(
                                 imageVector = Icons.Default.DateRange,
                                 contentDescription = stringResource(id = R.string.date),
-                                tint = colorResource(id = R.color.black)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
+                            val (date, time) = DateUtils.toString(show.updatedAt, context)
+                                .toString().split(",").map { it.trim() }
                             Text(
-                                text = DateUtils.toString(show.updatedAt, context).toString(),
+                                text = "$date\n$time",
                                 style = Typography.bodyMedium,
+                                overflow = TextOverflow.Ellipsis,
+                                minLines = 2
                             )
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
@@ -245,7 +260,13 @@ fun ShowCard(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                IconButton(onClick = onClickSharePresentation) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = stringResource(R.string.share_link_via),
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
                 IconButton(onClick = onClickStartPresentation) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,

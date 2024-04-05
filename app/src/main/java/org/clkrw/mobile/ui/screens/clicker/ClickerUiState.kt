@@ -12,6 +12,7 @@ sealed interface ClickerUiState {
 }
 
 data class ClickerCountsUiState(
+    val url: String? = null,
     val slideNo: Int? = null,
     val totalSlides: Int? = null,
     val displaysCount: Int? = null,

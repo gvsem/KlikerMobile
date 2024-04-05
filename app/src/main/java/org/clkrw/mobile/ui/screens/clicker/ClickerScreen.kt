@@ -1,10 +1,6 @@
 package org.clkrw.mobile.ui.screens.clicker
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.util.Log
-import android.view.WindowManager
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,13 +35,14 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.clkrw.mobile.R
+import org.clkrw.mobile.domain.model.LaserEvent
 import org.clkrw.mobile.domain.model.Presentation
 import org.clkrw.mobile.domain.model.ShortUrl
 import org.clkrw.mobile.domain.model.Show
@@ -54,24 +51,15 @@ import org.clkrw.mobile.ui.theme.Typography
 
 @Composable
 fun KeepScreenOn() {
-    val context = LocalContext.current
+    val currentView = LocalView.current
     DisposableEffect(Unit) {
-        val window = context.findActivity()?.window
-        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        currentView.keepScreenOn = true
         onDispose {
-            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            currentView.keepScreenOn = false
         }
     }
 }
 
-fun Context.findActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    return null
-}
 
 @Composable
 fun ClickerScreen(
@@ -90,6 +78,7 @@ fun ClickerScreen(
         ClickerView(
             state,
             countsState,
+            onLaserEvent = { viewModel.onLaserEvent(it) },
             modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged {
@@ -105,7 +94,6 @@ fun ClickerScreen(
                     }
                     true
                 },
-            viewModel = viewModel
         )
 
         if (!hasFocus) {
@@ -121,9 +109,12 @@ fun ClickerScreen(
 fun ClickerView(
     state: ClickerUiState.Loaded,
     countsState: ClickerCountsUiState,
+    onLaserEvent: (LaserEvent) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ClickerViewModel? = null
 ) {
+    val shortIdentifier = state.show.shorts.first().shortIdentifier
+    val link = "clkr.me/$shortIdentifier"
+
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -132,16 +123,14 @@ fun ClickerView(
             .padding(8.dp)
     ) {
         Text(
-            state.show.presentation.title,
-            style = Typography.displayLarge
+            text = link,
+            style = Typography.displaySmall
         )
-        LaserViewComposable (
-            modifier = Modifier.fillMaxWidth().aspectRatio(16.0f / 9.0f),
-            callback = { b: Boolean, x: Float, y: Float ->
-                run {
-                    viewModel?.onLaserEvent(b, x, y)
-                }
-            }
+        LaserViewComposable(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16.0f / 9.0f),
+            onLaserEvent = onLaserEvent
         )
         Row(horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -209,6 +198,7 @@ fun ClickerViewPreview() {
     )
     ClickerView(
         ClickerUiState.Loaded(show),
-        ClickerCountsUiState(null, 5, null)
+        ClickerCountsUiState(null, 5, null),
+        onLaserEvent = { }
     )
 }

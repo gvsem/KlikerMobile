@@ -22,10 +22,10 @@ class ShowRepositoryImpl(
         clickerApi.prevSlide(showId)
     }
 
-    override suspend fun laser(showId: String, type: Boolean, x: Float, y: Float) {
-        clickerApi.laserEvent(showId, LaserEvent(
-            if (type) "on" else "off",
-            x, y
-        ))
+    override suspend fun laser(showId: String, laserEvent: LaserEvent) {
+        clickerApi.laserEvent(
+            showId,
+            laserEvent
+        )
     }
 }
