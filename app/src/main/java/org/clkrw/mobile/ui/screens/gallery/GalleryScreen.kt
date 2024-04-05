@@ -37,9 +37,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Presentation
 import org.clkrw.mobile.domain.model.ShortUrl
@@ -57,8 +60,6 @@ fun GalleryScreen(
     modifier: Modifier = Modifier,
 ) {
     val state = viewModel.state
-
-    val context = LocalContext.current
 
     if (state is GalleryUiState.Loaded) {
         ShowsList(
@@ -103,10 +104,13 @@ fun ShowCard(
 
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.white),
+        ),
         modifier = modifier
             .fillMaxWidth()
             .padding(all = 16.dp)
-            .height(170.dp)
+            .height(180.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -114,15 +118,22 @@ fun ShowCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxWidth(0.8f)) {
+            Column(modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .fillMaxHeight()) {
                 Text(
                     text = show.presentation.title,
-                    style = Typography.titleLarge,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 22.sp,
+                        letterSpacing = 0.5.sp,
+                        color = colorResource(id = R.color.black),
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Row {
                     Box(
@@ -182,7 +193,10 @@ fun ShowCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(24.dp),
+                ) {
                     val shortIdentifier = show.shorts.first().shortIdentifier
                     val link = "clkr.me/$shortIdentifier"
                     Text(
@@ -190,17 +204,23 @@ fun ShowCard(
                         style = Typography.bodyMedium,
                     )
 
+                    Spacer(modifier = Modifier.width(2.dp))
+
                     val shareLinkViaStr = stringResource(id = R.string.share_link_via)
-                    IconButton(onClick = {
-                        val intent = Intent(Intent.ACTION_SEND)
-                        intent.type = "text/plain"
-                        intent.putExtra(Intent.EXTRA_TEXT, link)
-                        context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
-                    }) {
+                    IconButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_SEND)
+                            intent.type = "text/plain"
+                            intent.putExtra(Intent.EXTRA_TEXT, link)
+                            context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
+                        },
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(2.dp),
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = stringResource(id = R.string.share),
-                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
@@ -218,7 +238,9 @@ fun ShowCard(
                             Icon(
                                 imageVector = Icons.Filled.Edit,
                                 contentDescription = stringResource(R.string.edit_presentation),
-                                modifier = Modifier.size(40.dp)
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(5.dp)
                             )
                         }
                     }
@@ -268,7 +290,7 @@ fun ShowCardPreview() {
 
     ShowCard(
         show,
-        "",
+        "1",
         {},
         {},
     )

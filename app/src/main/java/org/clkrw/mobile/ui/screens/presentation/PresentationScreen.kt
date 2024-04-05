@@ -139,7 +139,7 @@ fun GrantView(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(size = 8.dp),
     ) {
         Row(
@@ -232,7 +232,7 @@ fun EmailInputView(
             .padding(8.dp)
             .height(64.dp)
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
     ) {
         Row(
             modifier = Modifier
