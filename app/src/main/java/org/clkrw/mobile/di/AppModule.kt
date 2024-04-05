@@ -17,10 +17,12 @@ import org.clkrw.mobile.data.auth.AuthServiceImpl
 import org.clkrw.mobile.data.bus.ShowSseBusImpl
 import org.clkrw.mobile.data.repository.RolesRepositoryImpl
 import org.clkrw.mobile.data.repository.ShowRepositoryImpl
+import org.clkrw.mobile.data.repository.UserRepositoryImpl
 import org.clkrw.mobile.domain.auth.AuthService
 import org.clkrw.mobile.domain.bus.ShowSseBus
 import org.clkrw.mobile.domain.repository.RolesRepository
 import org.clkrw.mobile.domain.repository.ShowRepository
+import org.clkrw.mobile.domain.repository.UserRepository
 import org.clkrw.mobile.util.SseClient
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
@@ -97,4 +99,9 @@ object AppModule {
     fun provideRolesRepository(clickerApi: ClickerApi): RolesRepository =
         RolesRepositoryImpl(clickerApi)
 
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(clickerApi: ClickerApi): UserRepository =
+        UserRepositoryImpl(clickerApi)
 }

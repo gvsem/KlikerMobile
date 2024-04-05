@@ -1,7 +1,6 @@
 package org.clkrw.mobile.data.repository
 
 import org.clkrw.mobile.data.api.ClickerApi
-import org.clkrw.mobile.domain.model.Grant
 import org.clkrw.mobile.domain.repository.ResponseCode
 import org.clkrw.mobile.domain.repository.RolesRepository
 import org.clkrw.mobile.domain.repository.toResponseCode

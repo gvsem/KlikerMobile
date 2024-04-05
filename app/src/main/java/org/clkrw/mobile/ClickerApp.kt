@@ -55,12 +55,14 @@ fun ClickerApp() {
                 LoginScreen(
                     viewModel = hiltViewModel(),
                     navigateCallback = {
-                        titles.add(stringResource(id = Screen.Gallery.title))
                         navController.navigate(Screen.Gallery.name) {
-                            titles.removeLast()
-                            popUpTo(Screen.Login.name) {
-                                inclusive = true
-                            }
+                            popUpTo(navController.graph.id) { inclusive = true }
+//                         titles.add(stringResource(id = Screen.Gallery.title))
+//                         navController.navigate(Screen.Gallery.name) {
+//                             titles.removeLast()
+//                             popUpTo(Screen.Login.name) {
+//                                 inclusive = true
+//                             }
                         }
                     },
                     modifier = Modifier.padding(paddingValues),

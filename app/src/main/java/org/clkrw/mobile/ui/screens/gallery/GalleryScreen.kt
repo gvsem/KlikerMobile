@@ -39,9 +39,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.clkrw.mobile.R
 import org.clkrw.mobile.domain.model.Presentation
 import org.clkrw.mobile.domain.model.ShortUrl
@@ -63,6 +66,7 @@ fun GalleryScreen(
     if (state is GalleryUiState.Loaded) {
         ShowsList(
             shows = state.presentations,
+            currentUserId = state.currentUser.id,
             onClickEditPresentation = onClickEditPresentation,
             onClickStartPresentation = onClickStartPresentation,
             modifier = modifier
@@ -73,6 +77,7 @@ fun GalleryScreen(
 @Composable
 fun ShowsList(
     shows: List<Show>,
+    currentUserId: String,
     onClickEditPresentation: (Show) -> Unit,
     onClickStartPresentation: (Show) -> Unit,
     modifier: Modifier = Modifier,
@@ -81,6 +86,7 @@ fun ShowsList(
         items(shows) { show ->
             ShowCard(
                 show = show,
+                currentUserId = currentUserId,
                 onClickEditPresentation = { onClickEditPresentation(show) },
                 onClickStartPresentation = { onClickStartPresentation(show) }
             )
@@ -92,6 +98,7 @@ fun ShowsList(
 @Composable
 fun ShowCard(
     show: Show,
+    currentUserId: String,
     onClickEditPresentation: () -> Unit,
     onClickStartPresentation: () -> Unit,
     modifier: Modifier = Modifier,
@@ -109,11 +116,13 @@ fun ShowCard(
 
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.white),
+        ),
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-            .height(170.dp),
-        shape = RectangleShape
+            .padding(all = 16.dp)
+            .height(180.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -121,15 +130,22 @@ fun ShowCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Column {
+            Column(modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .fillMaxHeight()) {
                 Text(
                     text = show.presentation.title,
-                    style = Typography.titleLarge,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 22.sp,
+                        letterSpacing = 0.5.sp,
+                        color = colorResource(id = R.color.black),
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -190,20 +206,59 @@ fun ShowCard(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(24.dp),
+                ) {
+                    val shortIdentifier = show.shorts.first().shortIdentifier
+                    val link = "clkr.me/$shortIdentifier"
+                    Text(
+                        text = link,
+                        style = Typography.bodyMedium,
+                    )
+
+                    Spacer(modifier = Modifier.width(2.dp))
+
+                    val shareLinkViaStr = stringResource(id = R.string.share_link_via)
+                    IconButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_SEND)
+                            intent.type = "text/plain"
+                            intent.putExtra(Intent.EXTRA_TEXT, link)
+                            context.startActivity(Intent.createChooser(intent, shareLinkViaStr))
+                        },
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(2.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = stringResource(id = R.string.share),
+                        )
+                    }
+                }
             }
 
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .wrapContentWidth(),
+                    .width(40.dp),
             ) {
-                IconButton(onClick = onClickEditPresentation) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(R.string.edit_presentation),
-                        modifier = Modifier.size(40.dp)
-                    )
+                Box(modifier = Modifier.size(40.dp)) {
+                    if (show.owner.id == currentUserId) {
+                        IconButton(onClick = onClickEditPresentation) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = stringResource(R.string.edit_presentation),
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(5.dp)
+                            )
+                        }
+                    }
                 }
                 IconButton(onClick = onClickSharePresentation) {
                     Icon(
@@ -254,8 +309,10 @@ fun ShowCardPreview() {
         grants = emptyList(),
     )
 
-    ShowsList(
-        shows = listOf(show, show),
-        onClickEditPresentation = {},
-        onClickStartPresentation = {})
+    ShowCard(
+        show,
+        "1",
+        {},
+        {},
+    )
 }
