@@ -196,10 +196,9 @@ fun ShowCard(
                                 contentDescription = stringResource(id = R.string.date),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            val (date, time) = DateUtils.toString(show.updatedAt, context)
-                                .toString().split(",").map { it.trim() }
+                            val date = DateUtils.toString(show.updatedAt, context)
                             Text(
-                                text = "$date\n$time",
+                                text = date.toString(),
                                 style = Typography.bodyMedium,
                                 overflow = TextOverflow.Ellipsis,
                                 minLines = 2
